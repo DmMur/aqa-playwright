@@ -18,7 +18,7 @@ const errors = [
   "Password has to be from 8 to 15 characters long and contain at least one integer, one capital, and one small letter",
 ];
 
-test.describe("Verification of qauto app", () => {
+test.describe("Verification of qauto app", { tag: ["@home"] }, () => {
   test.describe.configure({ mode: "serial" });
 
   test("open main page", async ({ page }) => {
@@ -65,12 +65,19 @@ test.describe("Verification of qauto app", () => {
     await page.locator("#signupLastName").fill(val1);
     await page.locator("#signupEmail").fill(val2);
 
-    await expect(
-      page.getByText("Name is invalid", { exact: true })
-    ).toBeVisible();
+    //await expect(
+    //  page.getByText("Name is invalid", { exact: true })
+    // ).toBeVisible();
+
+    expect(
+      await page.locator(".invalid-feedback p").first().innerText()
+    ).toEqual("Name is invalid");
+
     // await page.locator("app-signup-form  p:nth-child(2)").
     await page
-      .getByText("Name has to be from 2 to 20 characters long", { exact: true })
+      .getByText("Name has to be from 2 to 20 characters long", {
+        exact: true,
+      })
       .click();
     //await page.getByText('Last name has to be from 2 to').click();
 
@@ -78,7 +85,7 @@ test.describe("Verification of qauto app", () => {
     await page.waitForTimeout(1000);
 
     await expect(
-      page.getByText("Last name has to be from 2 to 20 characters long", {
+      page.getByText("Last name has to be from 2 to 20 characters long1", {
         exact: true,
       })
     ).toBeVisible();
