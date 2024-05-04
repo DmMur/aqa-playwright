@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import { configDotenv } from "dotenv";
+
+configDotenv({ path: "env/.env" });
+//configDotenv({ path: `env/.env.${process.env.ENV}` });
 
 /**
  * Read environment variables from file.
@@ -23,27 +27,58 @@ export default defineConfig({
   workers: process.env.CI ? 4 : undefined,
   //workers: 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [["html"], ["dot"], ["line"]],
+  reporter: [
+    // ["html", { open: "never" }], // don't open  report at once
+    // ["dot"],
+    // ["line"],
+    // [
+    //   "@testomatio/reporter/lib/adapter/playwright.js",
+    //   {
+    //     apiKey: process.env.TESTOMAT,
+    //   },
+    // ],
+    ["./myreporter.ts", { customOption: "some value" }],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
-
+    /*
     baseURL: "https://qauto.forstudy.space",
     httpCredentials: {
       username: "guest",
       password: "welcome2qauto",
     },
+    */
+    baseURL: process.env.ENV_URL,
+    httpCredentials: {
+      username: process.env.HTTP_CREDENTIALS_USERNAME,
+      password: process.env.HTTP_CREDENTIALS_PASSWORD,
+    },
 
-    //ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: true,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+    video: "retain-on-failure",
   },
 
   /* Configure projects for major browsers */
   projects: [
+    { name: "setup", testMatch: /.*\.setup\.ts/ },
+
+    {
+      name: "chromium-with-setup",
+      use: {
+        ...devices["Desktop Chrome"],
+        // Use prepared auth state.
+        storageState: "playwright/.auth/user.json",
+      },
+      dependencies: ["setup"],
+    },
+
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
