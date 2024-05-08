@@ -28,9 +28,9 @@ export default defineConfig({
   //workers: 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    // ["html", { open: "never" }], // don't open  report at once
-    // ["dot"],
-    // ["line"],
+    ["html", { open: "never" }], // don't open  report at once
+    ["dot"],
+    ["line"],
     // [
     //   "@testomatio/reporter/lib/adapter/playwright.js",
     //   {
@@ -66,6 +66,8 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
+
+  // adding for using storage
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },
 
